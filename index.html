@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+  </head>
+  <body>
+    <div class="todo-container">
+      <h1>Todo App</h1>
+      <input type="text" id="todo-input" placeholder="Enter your todo" />
+      <button onclick="addTodo()">Add Todo</button>
+      <button onclick="deleteAllTodos()">Delete All Todos</button>
+      <br />
+      <ul id="todo-list"></ul>
+    </div>
+
+    <script>
+     // Initialize todos array
+      let todos = []; // Creates an empty array to store todos
+
+      // Save todos to localStorage
+      function saveTodos() { // Defines a function to save todos
+        localStorage.setItem("todos", JSON.stringify(todos)); // Saves todos array as a JSON string in localStorage
+      }
+
+      // Load todos from localStorage
+      window.onload = () => { // Runs this code when the page loads
+        const storedTodos = localStorage.getItem("todos"); // Gets the saved todos from localStorage
+        if (storedTodos) { // Checks if there are any saved todos
+          todos = JSON.parse(storedTodos); // Converts the JSON string back to an array and stores it in todos
+          renderTodos(); // Calls renderTodos to display the loaded todos
+        }
+      };
+
+      // Add a new todo
+      function addTodo() { // Defines a function to add a new todo
+        let userInput = document.getElementById("todo-input").value.trim(); // Gets and trims the input value from the text box
+        if (userInput === "") { // Checks if the input is empty
+          alert("Please enter a todo."); // Shows an alert if input is empty
+          return; // Stops the function if input is empty
+        }
+        if (userInput.length < 3) { // Checks if input is less than 3 characters
+          alert("Todo must be more than 2 characters long."); // Shows an alert if input is too short
+          return; // Stops the function if input is too short
+        }
+
+        todos.push(userInput); // Adds the input to the todos array
+        saveTodos(); // Saves the updated todos array to localStorage
+        renderTodos(); // Updates the displayed todo list
+        document.getElementById("todo-input").value = ""; // Clears the input text box
+      }
+
+      // Render todos to the page
+      function renderTodos() { // Defines a function to display todos
+        const list = document.getElementById("todo-list"); // Gets the todo list element
+        list.innerHTML = ""; // Clears the current list to avoid duplicates
+
+        todos.forEach((todo, index) => { // Loops through each todo item and its index
+          const li = document.createElement("li"); // Creates a new list item element
+          li.textContent = todo; // Sets the list item's text to the todo text
+
+          // Create buttons container
+          const btns = document.createElement("div"); // Creates a div to hold buttons
+          btns.className = "btns"; // Sets the class name for the buttons container
+
+          // Edit button
+          const editBtn = document.createElement("button"); // Creates an edit button
+          editBtn.className = "edit-btn"; // Sets the class name for the edit button
+          editBtn.textContent = "Edit"; // Sets the button text to "Edit"
+          editBtn.onclick = () => { // Defines what happens when the edit button is clicked
+            let newText = prompt("Enter your updated todo", todo); // Shows a prompt with the current todo text
+            if (newText !== null && newText.trim() !== "") { // Checks if the new text is valid (not null or empty)
+              todos[index] = newText.trim(); // Updates the todo at the current index
+              saveTodos(); // Saves the updated todos to localStorage
+              renderTodos(); // Refreshes the displayed todo list
+            }
+          };
+
+          // Delete button
+          const deleteBtn = document.createElement("button"); // Creates a delete button
+          deleteBtn.className = "delete-btn"; // Sets the class name for the delete button
+          deleteBtn.textContent = "Delete"; // Sets the button text to "Delete"
+          deleteBtn.onclick = () => { // Defines what happens when the delete button is clicked
+            todos.splice(index, 1); // Removes the todo at the current index
+            saveTodos(); // Saves the updated todos to localStorage
+            renderTodos(); // Refreshes the displayed todo list
+          };
+
+          // Append buttons to container and container to list item
+          btns.appendChild(editBtn); // Adds the edit button to the buttons container
+          btns.appendChild(deleteBtn); // Adds the delete button to the buttons container
+          li.appendChild(btns); // Adds the buttons container to the list item
+          list.appendChild(li); // Adds the list item to the todo list
+        });
+      }
+
+      // Delete all todos
+      function deleteAllTodos() { // Defines a function to delete all todos
+        todos = []; // Resets the todos array to empty
+        saveTodos(); // Saves the empty array to localStorage
+        renderTodos(); // Clears the displayed todo list
+      }
+    </script>
+  </body>
+</html>

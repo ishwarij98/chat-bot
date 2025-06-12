@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="todo-container bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Todo App</h1>
+
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="todo-input" placeholder="Enter your todo"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <button onclick="addTodo()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                Add
+            </button>
+        </div>
+
+        <button onclick="deleteall()" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 mb-4 rounded-md">
+            Delete All
+        </button>
+
+        <hr class="mb-4" />
+
+        <ul id="todo-list" class="space-y-2"></ul>
+    </div>
+</body>
+
+
+<script>
+    let todos = [];
+
+    // Load from Local storage and update the array
+    window.onload = function () {
+        const alreadyStoredTodos = localStorage.getItem("todos");
+        if (alreadyStoredTodos) {
+            todo = JSON.parse(alreadyStoredTodos);
+            renderTodos();
+        }
+    };
+
+    // save todos in array
+    function saveTodos() {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }
+
+    function renderTodos() {
+        const list = document.getElementById("todo-list");
+        list.innerHTML = "";
+        
+        
+        todos.forEach((todo, index) => {
+            const li = document.createElement("li");
+            li.textContent = todo;
+            li.className = "flex justify-between items-center bg-gray-100 p-2 rounded-md";
+
+            // Button
+            const btns = document.createElement("div");
+            btns.className = "flex gap-2";
+
+
+            // Edit // Delete
+            const editBtn = document.createElement("button");
+            editBtn.className = "bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded";
+
+            editBtn.textContent = "Edit Button";
+
+            editBtn.onclick = () => {
+                let newText = prompt("Enter your updating todo");
+                if (newText !== null && newText.trim() !== "") {
+                    todos[index] = newText.trim();
+                    saveTodos();
+                    renderTodos();
+                }
+            };
+
+            const deleteBtn = document.createElement("button");
+
+            deleteBtn.className = "bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded";
+            deleteBtn.textContent = "Delete Button";
+            deleteBtn.onclick = () => {
+                todos.splice(index, 1);
+                saveTodos();
+                renderTodos();
+            };
+
+            btns.appendChild(editBtn);
+            btns.appendChild(deleteBtn);
+            li.appendChild(btns);
+            list.appendChild(li);
+        });
+    }
+
+    function addTodo() {
+        const userInput = document.getElementById("todo-input").value;
+        console.log(userInput); // Learn JS
+
+        if (userInput == "") {
+            alert("Hey user please add something");
+        }
+
+        if (userInput.length < 3) {
+            alert("hey user please add more than 2 characters ");
+        }
+
+        // moving the input text to array using push method
+
+        todos.push(userInput);
+
+        // moving to final complete array which has my input moving that to
+        // local storage
+
+        localStorage.setItem("todos", JSON.stringify(todos));
+        renderTodos();
+        document.getElementById("todo-input").value = "";
+    }
+
+    function deleteall() {
+        todos = [];
+        saveTodos()
+        renderTodos()
+    }
+</script>
+
+</html>
